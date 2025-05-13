@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html>
+<head><title>Dashboard</title></head>
+<body>
+    <h2>Welcome, {{ username }}</h2>
+    <p><strong>IP Address:</strong> {{ ip }}</p>
+    <p><strong>Hostname:</strong> {{ hostname }}</p>
+    <p><strong>Wi-Fi Network:</strong> {{ ssid }}</p>
+    <p><strong>Devices on Network:</strong></p>
+<ul>
+    {% for device in devices %}
+        <li>{{ device.ip }} - {{ device.mac }}</li>
+    {% endfor %}
+</ul>
+
+    <a href="/logout">Logout</a>
+</body>
+</html>
