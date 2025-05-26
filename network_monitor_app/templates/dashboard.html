@@ -1,18 +1,171 @@
 <!DOCTYPE html>
-<html>
-<head><title>Dashboard</title></head>
-<body>
-    <h2>Welcome, {{ username }}</h2>
-    <p><strong>IP Address:</strong> {{ ip }}</p>
-    <p><strong>Hostname:</strong> {{ hostname }}</p>
-    <p><strong>Wi-Fi Network:</strong> {{ ssid }}</p>
-    <p><strong>Devices on Network:</strong></p>
-<ul>
-    {% for device in devices %}
-        <li>{{ device.ip }} - {{ device.mac }}</li>
-    {% endfor %}
-</ul>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Network Dashboard</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="/static/style.css"> <!-- Make sure this is styled correctly -->
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            display: flex;
+        }
 
-    <a href="/logout">Logout</a>
+        .sidebar {
+            width: 250px;
+            background-color: #333;
+            color: #fff;
+            height: 100vh;
+            padding: 20px;
+            box-sizing: border-box;
+            position: fixed;
+            top: 0;
+            left: 0;
+            overflow-y: auto;
+        }
+
+        .sidebar h2 {
+            margin-top: 0;
+        }
+
+        .sidebar a {
+            color: #fff;
+            text-decoration: none;
+            display: block;
+            padding: 10px 0;
+        }
+
+        .sidebar a:hover {
+            background-color: #444;
+        }
+
+        .main {
+            margin-left: 250px;
+            padding: 20px;
+            width: calc(100% - 250px);
+        }
+
+        .info-box {
+            margin-bottom: 20px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        table th, table td {
+            padding: 10px;
+            border: 1px solid #ccc;
+        }
+
+        .toggle-btn {
+            position: fixed;
+            top: 15px;
+            left: 15px;
+            z-index: 1000;
+            background-color: #333;
+            color: white;
+            padding: 8px 10px;
+            cursor: pointer;
+            display: none;
+        }
+
+        @media screen and (max-width: 768px) {
+            .sidebar {
+                position: absolute;
+                left: -250px;
+                transition: left 0.3s;
+            }
+
+            .sidebar.active {
+                left: 0;
+            }
+
+            .main {
+                margin-left: 0;
+                width: 100%;
+            }
+
+            .main.shifted {
+                margin-left: 250px;
+            }
+
+            .toggle-btn {
+                display: block;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="toggle-btn" onclick="toggleSidebar()">
+        <i class="fas fa-bars"></i>
+    </div>
+
+    <div class="sidebar" id="sidebar">
+        <h2>Dashboard</h2>
+        <a href="#">Blacklisted Domains/IP</a>
+        <a href="#">Traffic Analysis</a>
+        <a href="#">Threat Detection</a>
+        <a href="#">Device Management</a>
+        <a href="#">Security Tools</a>
+        <a href="#">Logs & Reports</a>
+        <a href="#">Network Tools</a>
+        <a href="#">Settings & Configuration</a>
+        <a href="#">Quick Actions</a>
+        <a href="#">Help & Support</a>
+    </div>
+
+    <div class="main" id="main">
+        <div class="info-box">
+            <h1>Welcome, {{ username }}</h1>
+            <p><strong>IP:</strong> {{ ip }}</p>
+            <p><strong>Hostname:</strong> {{ hostname }}</p>
+            <p><strong>SSID:</strong> {{ ssid }}</p>
+        </div>
+
+        <h2>Connected Devices</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>IP Address</th>
+                    <th>Domain Accessed</th>
+                    <th>Hostname</th>
+                    <th>Signal Strength</th>
+                    <th>Usage Status</th>
+                    <th>Device Name</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for ip, device in devices.items() %}
+                <tr>
+                    <td>{{ ip }}</td>
+                    <td>{{ device.domains | join(', ') if device.domains else 'N/A' }}</td>
+                    <td>{{ device.hostname }}</td>
+                    <td>{{ device.signal }}</td>
+                    <td>
+                        {% if device.flags.domain %} Domain Flagged {% endif %}
+                        {% if device.flags.bandwidth %} High Bandwidth {% endif %}
+                        {% if not device.flags %} Normal {% endif %}
+                    </td>
+                    <td>{{ device.type }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <script>
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const main = document.getElementById('main');
+            sidebar.classList.toggle('active');
+            main.classList.toggle('shifted');
+        }
+    </script>
+
 </body>
 </html>
